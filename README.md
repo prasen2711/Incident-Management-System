@@ -1,64 +1,214 @@
-# Enterprise Incident Management System (IMS)
+GNN-Based Traffic Forecasting
 
-An enterprise-grade Incident Management System featuring a modern Angular frontend, scalable FastAPI backend, AI-powered report generation, Supabase database + storage, and a robust Continuous Integration / Site Reliability Engineering (SRE) pipeline deployed on Google Cloud Run.
+A deep learning-based traffic forecasting system using Graph Neural Networks (GNNs) to model spatial and temporal relationships in traffic sensor data.
 
-## ✨ Features
-- **Role-Based Access**: Admin, Support Agent, and Staff portals.
-- **Incident Tracking**: Create, assign, update, and resolve incidents with priorities and categories.
-- **AI Analytics & Reporting**: Automatic PDF generation for Post-Mortems, Incident Summaries, and Monthly Analytics using **Google Gemini AI**.
-- **Internal Knowledge Base**: Help staff resolve issues independently.
-- **Email Notifications**: Gmail SMTP integration.
-- **Mobile Responsive UI**: Built with Angular and vanilla CSS.
-- **Enterprise DevOps & SRE**: Deep database health checks, structured JSON logging, and Non-Root Multi-Stage Docker builds.
-- **Continuous Integration**: Automated CI pipeline via GitHub Actions for linting, pytest integration testing, and SonarQube scanning.
+<p align="center"> <img src="https://github.com/user-attachments/assets/069ae074-70bd-4f3c-8f67-8c74dcf985a3" alt="GNN-Based Traffic Forecasting" width="900"> </p>
+✨ Features
 
-## 🏗 Architecture
-- **Frontend**: Angular 18 (TypeScript, RxJS).
-- **Backend**: FastAPI, SQLAlchemy, Pydantic, Alembic (Python 3.11, Async).
-- **Database**: PostgreSQL (Hosted on **Supabase** Free Tier).
-- **Storage**: **Supabase Storage** (For user attachments and AI PDF reports).
-- **AI Engine**: Google Gemini API (1.5 Flash).
-- **Infrastructure**: Docker, Multi-Stage builds, GitHub Actions, Google Cloud Run (Serverless).
+Traffic Forecasting: Predict traffic conditions using spatio-temporal Graph Neural Networks.
 
-## 🛠 Prerequisites
-- Docker & Docker Compose
-- Google Gemini API Key
-- Supabase Project (Database URL & Service Role Key)
-- Gmail App Password (for email features)
-- Google Cloud CLI (for production deployment)
+STGCN: Spatio-Temporal Graph Convolutional Network implementation.
 
-## 🚀 Local Setup (Docker)
+DSTAGNN: Dynamic Spatial-Temporal Attention Graph Neural Network implementation.
 
-1. Get your API keys:
-   - Create a free [Gemini API Key](https://aistudio.google.com/app/apikey).
-   - Create a free [Supabase Project](https://supabase.com). Copy the Database URL and Service Role Key. Create two private storage buckets: `attachments` and `reports`.
+METR-LA Dataset: Traffic sensor data from the Los Angeles highway network.
 
-2. Copy `.env.example` to `.env` in the `backend` directory and fill in your keys:
-   ```env
-   DATABASE_URL=postgresql+asyncpg://postgres:password@aws-0-region.pooler.supabase.com:6543/postgres
-   SUPABASE_URL=https://your-project.supabase.co
-   SUPABASE_SERVICE_KEY=your-service-role-key
-   GEMINI_API_KEY=your-gemini-key
-   ```
+Pre-trained Models: Includes trained STGCN and DSTAGNN checkpoints.
 
-3. Build and start the containers:
-   ```bash
-   docker-compose up -d --build
-   ```
+Graph Modeling: Uses traffic sensor locations, adjacency matrices, and graph relationships.
 
-4. Access the system:
-   - **Frontend App**: `http://localhost:8080`
-   - **Backend API Docs**: `http://localhost:8000/docs`
+Web Interface: Flask-based interface for traffic forecasting and visualization.
 
-## ☁️ Deployment
-This application is designed for serverless container deployment via **Google Cloud Run**.
+Training Pipeline: Includes preprocessing, training, and model inspection scripts.
 
-**Backend Deployment:**
-```bash
-gcloud run deploy ims-backend --source . --region us-central1 --allow-unauthenticated --port 8000
-```
+🏗 Architecture
 
-**Frontend Deployment (Runs securely on Port 8080):**
-```bash
-gcloud run deploy ims-frontend --source . --region us-central1 --allow-unauthenticated --port 8080
-```
+Models: STGCN, DSTAGNN
+
+Deep Learning: PyTorch
+
+Backend: Flask
+
+Data Processing: NumPy, Pandas, Scikit-learn
+
+Graph Processing: NetworkX, PyDeck
+
+Dataset: METR-LA
+
+Experimentation: Jupyter Notebook
+
+Pipeline
+METR-LA Dataset
+       │
+       ▼
+Data Preprocessing
+       │
+       ▼
+Traffic Sensor Graph
+       │
+       ▼
+Spatial-Temporal Modeling
+       │
+   ┌───┴────┐
+   ▼        ▼
+ STGCN   DSTAGNN
+   │        │
+   └───┬────┘
+       ▼
+Traffic Forecast
+       │
+       ▼
+Flask Web Application
+
+📂 Project Structure
+GNN-Based-Traffic-Forecasting/
+│
+├── Dataset_DP_ESE/          # METR-LA dataset and graph files
+├── output/                  # Preprocessing and trained model outputs
+│   ├── scaler.pkl
+│   └── tuning_results/
+│
+├── static/                  # CSS files
+├── templates/               # Flask HTML templates
+│
+├── app.py                   # Flask application
+├── app_cc.py                # Alternative Flask application
+├── precompute.py            # Data preprocessing
+├── train_models.py          # Model training
+├── print_models.py          # Model inspection/evaluation
+├── GeminiV3.ipynb           # Jupyter Notebook
+├── dl_report.docx           # Project report
+├── requirements.txt         # Python dependencies
+└── README.md
+
+📊 Dataset
+
+This project uses the METR-LA traffic dataset, containing traffic measurements collected from sensors across the Los Angeles highway network.
+
+Dataset and graph files are located in:
+
+Dataset_DP_ESE/
+
+
+Important files include:
+
+metr-la.h5
+metr_ids.txt
+adj_mx.pkl
+W_metrla.csv
+SE_metrla.txt
+distances_la_2012.csv
+graph_sensor_locations.csv
+
+🤖 Models
+STGCN
+
+Spatio-Temporal Graph Convolutional Network
+
+Combines graph convolution and temporal convolution to learn spatial and temporal traffic dependencies.
+
+DSTAGNN
+
+Dynamic Spatial-Temporal Attention Graph Neural Network
+
+Uses attention mechanisms to model dynamic spatial and temporal relationships between traffic sensors.
+
+📦 Pre-trained Models
+
+Trained model checkpoints are included under:
+
+output/tuning_results/
+
+DSTAGNN_run_1.pth
+STGCN_run_1.pth
+
+
+Training loss plots are also included:
+
+DSTAGNN_run_1_loss_plot.png
+STGCN_run_1_loss_plot.png
+
+🛠 Prerequisites
+
+Python 3
+
+Git
+
+pip
+
+PyTorch
+
+Python packages listed in requirements.txt
+
+🚀 Installation
+1. Clone the repository
+git clone https://github.com/prasen2711/GNN-Based-Traffic-Forecasting.git
+cd GNN-Based-Traffic-Forecasting
+
+2. Create a virtual environment
+
+Windows:
+
+python -m venv venv
+venv\Scripts\activate
+
+
+Linux/macOS:
+
+python3 -m venv venv
+source venv/bin/activate
+
+3. Install dependencies
+pip install -r requirements.txt
+
+▶️ Run the Application
+
+Start the Flask application:
+
+python app.py
+
+
+Open the application in your browser:
+
+http://127.0.0.1:5000/
+
+🧪 Training
+Preprocess the dataset
+python precompute.py
+
+Train the models
+python train_models.py
+
+Inspect the models
+python print_models.py
+
+📓 Notebook
+
+The project includes:
+
+GeminiV3.ipynb
+
+
+Open it using Jupyter Notebook or JupyterLab:
+
+jupyter notebook GeminiV3.ipynb
+
+🔮 Future Improvements
+
+Real-time traffic data integration
+
+Additional GNN architectures
+
+Multiple forecasting horizons
+
+Improved prediction visualization
+
+More extensive model evaluation
+
+REST API for inference
+
+Docker deployment
+
+Cloud deployment
+
+Interactive traffic-network visualization
