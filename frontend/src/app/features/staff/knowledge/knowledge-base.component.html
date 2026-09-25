@@ -1,0 +1,70 @@
+<div class="kb-page animate-fade-in">
+
+  <!-- Hero Banner -->
+  <div class="kb-hero">
+    <h1>Knowledge Base</h1>
+    <p>Find answers to common questions and issues</p>
+    <div class="search-wrapper">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="kb-search" placeholder="Search articles..." [(ngModel)]="searchQuery" (ngModelChange)="onSearch($event)">
+    </div>
+  </div>
+
+  <!-- Category Pills -->
+  <div class="category-bar">
+    <button *ngFor="let cat of categories" class="cat-pill" [class.active]="activeCategory === cat" (click)="filterByCategory(cat)">
+      {{ cat }}
+    </button>
+  </div>
+
+  <!-- Loading Skeleton -->
+  <div class="skeleton-list" *ngIf="loading">
+    <div class="skeleton-item" *ngFor="let i of [1,2,3,4,5]"></div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state card" *ngIf="!loading && filtered.length === 0">
+    <div class="empty-icon">📭</div>
+    <h3>No articles found</h3>
+    <p *ngIf="articles.length === 0">No articles have been published yet. Check back soon!</p>
+    <p *ngIf="articles.length > 0">No articles match your search. Try a different keyword or category.</p>
+  </div>
+
+  <!-- Article List -->
+  <div class="article-list card" *ngIf="!loading && filtered.length > 0">
+    <h2 class="list-title">{{ activeCategory === 'All' ? 'All Articles' : activeCategory }} <span class="count">({{ filtered.length }})</span></h2>
+    <div class="article-item" *ngFor="let article of filtered" (click)="readArticle(article)">
+      <div class="article-icon">📄</div>
+      <div class="article-info">
+        <h3 class="article-title">{{ article.title }}</h3>
+        <div class="article-meta">
+          <span class="cat-tag">{{ article.category }}</span>
+          <span class="views">👁 {{ article.views }} views</span>
+          <span class="date">🗓 {{ article.created_at | date:'MMM d, y' }}</span>
+        </div>
+      </div>
+      <span class="read-arrow">→</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- Article Detail Modal -->
+<div class="modal-overlay" *ngIf="selectedArticle" (click)="closeArticle()">
+  <div class="article-modal card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <span class="cat-tag">{{ selectedArticle.category }}</span>
+        <h2 style="margin-top: 0.5rem;">{{ selectedArticle.title }}</h2>
+        <div class="article-meta" style="margin-top: 0.25rem;">
+          <span class="views">👁 {{ selectedArticle.views }} views</span>
+          <span class="date">🗓 {{ selectedArticle.created_at | date:'MMM d, y' }}</span>
+        </div>
+      </div>
+      <button class="close-btn" (click)="closeArticle()">✕</button>
+    </div>
+    <div class="modal-body article-content">
+      <p>{{ selectedArticle.content }}</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,86 @@
+<div class="page animate-fade-in">
+  <div class="page-header">
+    <div>
+      <h1>Incident Management</h1>
+      <p>{{ filteredIncidents.length }} incidents found</p>
+    </div>
+  </div>
+
+  <div class="filters card" style="display:flex; gap: 1rem; margin-bottom: 1.5rem;">
+    <input class="search-input" type="text" placeholder="🔍  Search by title, category, status, priority..." (input)="onSearch($event)">
+    <select class="filter-select" (change)="onStatusFilter($event)">
+      <option value="">All Statuses</option>
+      <option *ngFor="let s of statuses" [value]="s">{{ s.replace('_', ' ') | titlecase }}</option>
+    </select>
+    <select class="filter-select" (change)="onPriorityFilter($event)">
+      <option value="">All Priorities</option>
+      <option *ngFor="let p of priorities" [value]="p">{{ p | titlecase }}</option>
+    </select>
+  </div>
+
+  <div class="skeleton-table card" *ngIf="loading">
+    <div class="skeleton-row" *ngFor="let i of [1,2,3,4,5]"></div>
+  </div>
+
+  <div class="table-container card" *ngIf="!loading">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Status</th>
+          <th>Priority</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let incident of filteredIncidents">
+          <td class="title-cell">{{ incident.title }}</td>
+          <td><span class="category-tag">{{ incident.category }}</span></td>
+          <td><app-status-badge [status]="incident.status" [label]="incident.status.replace('_',' ')"></app-status-badge></td>
+          <td><app-status-badge [status]="incident.priority" [label]="incident.priority"></app-status-badge></td>
+          <td class="date-cell">{{ incident.created_at | date:'MMM d, y' }}</td>
+          <td>
+            <button class="action-btn" (click)="openAssignModal(incident)">Manage</button>
+          </td>
+        </tr>
+        <tr *ngIf="filteredIncidents.length === 0">
+          <td colspan="6" class="empty-row">
+            <div class="empty-state-box">
+              <span>🎉</span>
+              <p>No incidents match your filters</p>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showAssignModal" (click)="closeModal()">
+  <div class="modal card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Manage Incident</h3>
+      <button class="close-btn" (click)="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" *ngIf="selectedIncident">
+      <p class="incident-title">{{ selectedIncident.title }}</p>
+      <form [formGroup]="assignForm">
+        <div class="form-group">
+          <label class="form-label">Assign to Support Agent</label>
+          <select class="form-control" formControlName="assignee_id">
+            <option value="">Unassigned</option>
+            <option *ngFor="let u of supportUsers" [value]="u.id">
+              {{ u.full_name }} (Expertise: {{ u.area_of_expertise || 'None' }})
+            </option>
+          </select>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeModal()">Cancel</button>
+      <button class="btn-primary" (click)="saveAssignment()">Save Changes</button>
+    </div>
+  </div>
+</div>

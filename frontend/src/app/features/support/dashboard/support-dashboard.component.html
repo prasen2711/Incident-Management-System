@@ -1,0 +1,40 @@
+<div class="dashboard animate-fade-in">
+  <div class="page-header">
+    <div>
+      <h1>Support Dashboard</h1>
+      <p>Welcome back, {{ currentUser?.full_name }}. Here's your current queue.</p>
+    </div>
+  </div>
+  <div class="skeleton-grid" *ngIf="loading">
+    <div class="skeleton-card" *ngFor="let i of [1,2,3,4]"></div>
+  </div>
+  <div class="content-grid" *ngIf="!loading">
+    <div class="panel card" style="grid-column: span 3;">
+      <div class="panel-header">
+        <h3>Assigned to Me</h3>
+        <a routerLink="/support/incidents" class="panel-link">View All →</a>
+      </div>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Status</th>
+              <th>Priority</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let incident of assigned.slice(0, 5)">
+              <td class="title-cell">{{ incident.title }}</td>
+              <td><app-status-badge [status]="incident.status" [label]="incident.status"></app-status-badge></td>
+              <td><app-status-badge [status]="incident.priority" [label]="incident.priority"></app-status-badge></td>
+            </tr>
+            <tr *ngIf="assigned.length === 0">
+              <td colspan="3" class="empty-state">No incidents currently assigned.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

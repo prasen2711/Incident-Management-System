@@ -1,0 +1,81 @@
+name: Deploy Production
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write # Required for Workload Identity Federation
+
+env:
+  PROJECT_ID: "project-945a6e31-2e0f-4f68-8fb"
+  REGION: "asia-south1"
+  WIF_PROVIDER: "projects/1053994989870/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider"
+  WIF_SERVICE_ACCOUNT: "github-actions-deployer@project-945a6e31-2e0f-4f68-8fb.iam.gserviceaccount.com"
+  TF_VAR_project_id: "project-945a6e31-2e0f-4f68-8fb"
+  TF_VAR_region: "asia-south1"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.WIF_PROVIDER }}
+          service_account: ${{ env.WIF_SERVICE_ACCOUNT }}
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+
+      - name: Build and Push Backend Docker Image
+        run: |
+          IMAGE_PATH="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/ims-repo/backend"
+          docker build -t $IMAGE_PATH:latest -t $IMAGE_PATH:${{ github.sha }} ./backend
+          docker push $IMAGE_PATH:latest
+          docker push $IMAGE_PATH:${{ github.sha }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init & Apply
+        env:
+          TF_VAR_database_url: ${{ secrets.DATABASE_URL }}
+          TF_VAR_secret_key: ${{ secrets.SECRET_KEY }}
+          TF_VAR_supabase_url: ${{ secrets.SUPABASE_URL }}
+          TF_VAR_supabase_service_key: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          TF_VAR_gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          cd terraform
+          terraform init
+          terraform apply -auto-approve
+
+      - name: Setup Node.js for Frontend
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: './frontend/package-lock.json'
+
+      - name: Build Frontend
+        run: |
+          cd frontend
+          npm install
+          npm run build
+
+      - name: Deploy Frontend to GCS Bucket
+        run: |
+          cd terraform
+          BUCKET_NAME=$(terraform output -raw storage_bucket_name)
+          cd ../frontend
+          gsutil -m rsync -R dist/frontend/browser gs://$BUCKET_NAME/
+          gsutil setmeta -h "Cache-Control:no-cache, max-age=0" gs://$BUCKET_NAME/index.html

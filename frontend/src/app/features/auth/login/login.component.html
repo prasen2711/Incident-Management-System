@@ -1,0 +1,99 @@
+<div class="auth-layout">
+  <!-- Left Side: Branding & Info -->
+  <div class="auth-banner">
+    <div class="banner-content animate-fade-in">
+      <div class="brand">
+        <div class="logo-box">TCS</div>
+        <div class="brand-text">
+          <h1>Enterprise Incident Management</h1>
+          <p>Powered by Tata Consultancy Services</p>
+        </div>
+      </div>
+
+      <div class="workflow-section">
+        <h3>How It Works</h3>
+        <ul class="workflow-steps">
+          <li>
+            <div class="step-icon">1</div>
+            <div class="step-details">
+              <strong>Raise Request</strong>
+              <span>Standard users submit incidents with priority and details.</span>
+            </div>
+          </li>
+          <li>
+            <div class="step-icon">2</div>
+            <div class="step-details">
+              <strong>Assign & Triage</strong>
+              <span>System routes to appropriate support teams.</span>
+            </div>
+          </li>
+          <li>
+            <div class="step-icon">3</div>
+            <div class="step-details">
+              <strong>Resolve</strong>
+              <span>Support agents track, update, and resolve the issue.</span>
+            </div>
+          </li>
+          <li>
+            <div class="step-icon">4</div>
+            <div class="step-details">
+              <strong>Review Analytics</strong>
+              <span>Admins monitor performance and system health.</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="compliance-badge">
+        <span class="icon">🔒</span>
+        <span>Secured by JWT & Role-Based Access Control</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side: Login Form -->
+  <div class="auth-form-container">
+    <div class="auth-card animate-fade-in">
+      <div class="card-header">
+        <h2>Sign In</h2>
+        <p>Access your dashboard</p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-control" [class.error]="getFieldError('username')" formControlName="username" placeholder="user@tcs.com" autocomplete="email">
+          <span class="field-error" *ngIf="getFieldError('username')">{{ getFieldError('username') }}</span>
+        </div>
+
+        <div class="form-group">
+          <div class="label-row">
+            <label class="form-label">Password</label>
+            <a routerLink="/forgot-password" class="forgot-link">Forgot password?</a>
+          </div>
+          <div class="input-wrapper">
+            <input [type]="showPassword ? 'text' : 'password'" class="form-control" [class.error]="getFieldError('password')" formControlName="password" placeholder="••••••••" autocomplete="current-password">
+            <button type="button" class="eye-btn" (click)="togglePassword()">{{ showPassword ? 'Hide' : 'Show' }}</button>
+          </div>
+          <span class="field-error" *ngIf="getFieldError('password')">{{ getFieldError('password') }}</span>
+        </div>
+
+        <div class="form-row-inline">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="rememberMe">
+            <span>Remember me on this device</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn-primary w-100" [disabled]="isLoading">
+          <span class="spinner" *ngIf="isLoading"></span>
+          <span>{{ isLoading ? 'Authenticating...' : 'Sign In' }}</span>
+        </button>
+      </form>
+
+      <div class="card-footer">
+        <p>New to the platform? <a routerLink="/signup" class="auth-link">Create an account</a></p>
+      </div>
+    </div>
+  </div>
+</div>

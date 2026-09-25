@@ -1,0 +1,81 @@
+<div class="dashboard animate-fade-in">
+  <!-- Hero Banner Section -->
+  <div class="hero-banner">
+    <div class="hero-content">
+      <h1>Welcome to Support Portal</h1>
+      <p>Search our support center knowledge base</p>
+      
+      <div class="search-bar-wrapper">
+        <input type="text" class="global-search" placeholder="How can we help you?">
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Cards (Overlapping Banner) -->
+  <div class="action-cards-container">
+    <a routerLink="/service-desk/incidents/new" class="action-card card">
+      <div class="ac-text">
+        <h4>New Incident</h4>
+        <p>Report an incident</p>
+      </div>
+    </a>
+
+    <a [routerLink]="['/service-desk/incidents/new']" [queryParams]="{ type: 'service' }" class="action-card card">
+      <div class="ac-text">
+        <h4>Request Service</h4>
+        <p>Browse the services offered</p>
+      </div>
+    </a>
+
+    <a routerLink="/service-desk/knowledge" class="action-card card">
+      <div class="ac-text">
+        <h4>Knowledge</h4>
+        <p>Browse knowledge base</p>
+      </div>
+    </a>
+  </div>
+
+  <!-- Main Content Tabs -->
+  <div class="content-grid" *ngIf="!loading">
+    <div class="panel card" style="grid-column: span 3;">
+      <div class="panel-header tabs-header">
+        <div class="tabs">
+          <button class="tab-btn active">My Open Requests <span class="badge">{{ open.length }}</span></button>
+          <button class="tab-btn">Most Read</button>
+        </div>
+        <a routerLink="/service-desk/incidents" class="panel-link">View All →</a>
+      </div>
+      
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Ticket ID / Title</th>
+              <th>Status</th>
+              <th>Priority</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let incident of recent">
+              <td class="title-cell">
+                <div class="incident-ref">INC-{{ incident.id.substring(0, 8).toUpperCase() }}</div>
+                <div class="incident-title">{{ incident.title }}</div>
+              </td>
+              <td><app-status-badge [status]="incident.status" [label]="incident.status"></app-status-badge></td>
+              <td><app-status-badge [status]="incident.priority" [label]="incident.priority"></app-status-badge></td>
+            </tr>
+            <tr *ngIf="recent.length === 0">
+              <td colspan="3" class="empty-state">
+                <p>No Data Found</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="skeleton-grid" *ngIf="loading">
+    <div class="skeleton-card" *ngFor="let i of [1,2,3]"></div>
+  </div>
+</div>

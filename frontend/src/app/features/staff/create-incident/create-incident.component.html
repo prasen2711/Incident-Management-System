@@ -1,0 +1,41 @@
+<div class="page animate-fade-in">
+  <div class="page-header">
+    <div>
+      <h1>Raise New Incident</h1>
+      <p>Please provide detailed information</p>
+    </div>
+  </div>
+  <div class="form-container card">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label class="form-label">Title *</label>
+        <input type="text" class="form-control" [class.error]="getError('title')" formControlName="title" placeholder="Brief description of the issue">
+        <span class="field-error" *ngIf="getError('title')">{{ getError('title') }}</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description *</label>
+        <textarea class="form-control" [class.error]="getError('description')" formControlName="description" rows="5" placeholder="Detailed explanation..."></textarea>
+        <span class="field-error" *ngIf="getError('description')">{{ getError('description') }}</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="form-control" formControlName="category">
+          <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Priority</label>
+        <select class="form-control" formControlName="priority">
+          <option *ngFor="let p of priorities" [value]="p">{{ p }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Attachment <span style="font-weight: 400; color: var(--text-muted);">(Max 5MB)</span></label>
+        <input type="file" class="form-control" (change)="onFileSelected($event)" accept="image/*,.pdf,.doc,.docx">
+      </div>
+      <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Submitting...' : 'Submit Incident' }}
+      </button>
+    </form>
+  </div>
+</div>

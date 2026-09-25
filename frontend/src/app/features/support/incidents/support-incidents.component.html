@@ -1,0 +1,77 @@
+<div class="page animate-fade-in">
+  <div class="page-header">
+    <div>
+      <h1>My Queue</h1>
+      <p>Incidents currently assigned to you</p>
+    </div>
+  </div>
+  <div class="skeleton-table card" *ngIf="loading">
+    <div class="skeleton-row" *ngFor="let i of [1,2,3,4]"></div>
+  </div>
+  <div class="table-container card" *ngIf="!loading">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Status</th>
+          <th>Priority</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let incident of incidents">
+          <td class="title-cell">{{ incident.title }}</td>
+          <td><app-status-badge [status]="incident.status" [label]="incident.status"></app-status-badge></td>
+          <td><app-status-badge [status]="incident.priority" [label]="incident.priority"></app-status-badge></td>
+          <td class="date-cell">{{ incident.created_at | date:'MMM d' }}</td>
+          <td>
+            <button class="action-btn" (click)="openModal(incident)">Update Status</button>
+          </td>
+        </tr>
+        <tr *ngIf="incidents.length === 0">
+          <td colspan="5" class="empty-row">
+            <div class="empty-state-box">
+              <p>Your queue is empty.</p>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="modal-overlay" *ngIf="showNoteModal" (click)="closeModal()">
+  <div class="modal card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Update Status</h3>
+      <button class="close-btn" (click)="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" *ngIf="selectedIncident">
+      <p class="incident-title">{{ selectedIncident.title }}</p>
+
+      <div class="report-section" *ngIf="selectedIncident.status === 'resolved' || selectedIncident.status === 'closed'" style="margin-bottom: 1.5rem; padding: 1rem; background: var(--bg-color); border-radius: 8px;">
+        <h4 style="margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span>✨</span> AI Post-Mortem Report
+        </h4>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Generate a detailed, professional post-mortem PDF using Gemini AI.</p>
+        <button class="btn-primary w-100" style="display: flex; justify-content: center; align-items: center; gap: 0.5rem;" (click)="generatePostmortem(selectedIncident)" [disabled]="isGeneratingReport">
+          <span class="spinner" *ngIf="isGeneratingReport" style="width: 14px; height: 14px; border-width: 2px;"></span>
+          {{ isGeneratingReport ? 'Gemini is writing...' : '📄 Generate PDF Report' }}
+        </button>
+      </div>
+
+      <form [formGroup]="updateForm">
+        <div class="form-group">
+          <label class="form-label">New Status</label>
+          <select class="form-control" formControlName="status">
+            <option *ngFor="let s of statuses" [value]="s">{{ s.replace('_', ' ') | titlecase }}</option>
+          </select>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeModal()">Cancel</button>
+      <button class="btn-primary" (click)="updateStatus()">Save Changes</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,25 @@
+.form-card { max-width: 760px; margin: 0 auto; padding: 2rem; }
+
+.article-textarea {
+  resize: vertical;
+  min-height: 280px;
+  font-family: inherit;
+  line-height: 1.6;
+}
+
+.char-count {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  display: block;
+  text-align: right;
+  margin-top: 0.25rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}

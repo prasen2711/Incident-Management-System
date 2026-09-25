@@ -1,0 +1,75 @@
+<div class="page animate-fade-in">
+  <div class="page-header">
+    <div>
+      <h1>User Management</h1>
+      <p>{{ users.length }} registered users</p>
+    </div>
+    <button class="btn-primary" (click)="openModal()">+ Add User</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn" [class.active]="activeTab === 'users'" (click)="setTab('users')">All Users</button>
+    <button class="tab-btn" [class.active]="activeTab === 'approvals'" (click)="setTab('approvals')">
+      Pending Approvals <span class="badge" *ngIf="pendingUsers.length > 0">{{ pendingUsers.length }}</span>
+    </button>
+  </div>
+
+  <div *ngIf="activeTab === 'users'">
+    <div class="search-bar card">
+      <input class="search-input" type="text" placeholder="🔍  Search users by name or email..." (input)="onSearch($event)">
+    </div>
+
+    <div class="users-grid" *ngIf="!loading">
+      <div class="user-card card" *ngFor="let user of filteredUsers">
+        <div class="user-avatar" [class]="user.role">{{ getInitials(user.full_name) }}</div>
+        <div class="user-info">
+          <h4>{{ user.full_name }}</h4>
+          <p>{{ user.email }}</p>
+        </div>
+        <div class="user-badges">
+          <app-status-badge [status]="user.role" [label]="user.role"></app-status-badge>
+          <span class="active-dot" [class.active]="user.is_active" [title]="user.is_active ? 'Active' : 'Inactive'"></span>
+        </div>
+        <div class="user-meta">
+          <span *ngIf="user.department">🏢 {{ user.department }}</span>
+          <span *ngIf="user.area_of_expertise">🛠️ {{ user.area_of_expertise }}</span>
+        </div>
+        <div class="user-meta mt-auto">
+          <span>Joined {{ user.created_at | date:'MMM y' }}</span>
+        </div>
+      </div>
+      <div class="empty-state" *ngIf="filteredUsers.length === 0">
+        <span>👥</span>
+        <p>No users found</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="activeTab === 'approvals'">
+    <div class="users-grid" *ngIf="!loading">
+      <div class="user-card card" *ngFor="let user of pendingUsers">
+        <div class="user-avatar pending">{{ getInitials(user.full_name) }}</div>
+        <div class="user-info">
+          <h4>{{ user.full_name }}</h4>
+          <p>{{ user.email }}</p>
+        </div>
+        <div class="user-meta" style="margin-top:0.5rem; margin-bottom:1rem;">
+          <p *ngIf="user.department"><strong>Dept:</strong> {{ user.department }}</p>
+          <p *ngIf="user.area_of_expertise"><strong>Expertise:</strong> {{ user.area_of_expertise }}</p>
+        </div>
+        <div class="approval-actions mt-auto">
+          <button class="btn-reject" (click)="rejectUser(user.id)">Reject</button>
+          <button class="btn-approve" (click)="approveUser(user.id)">Approve</button>
+        </div>
+      </div>
+      <div class="empty-state" *ngIf="pendingUsers.length === 0">
+        <span>✅</span>
+        <p>No pending approvals. You're all caught up!</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="skeleton-grid" *ngIf="loading">
+    <div class="skeleton-card" *ngFor="let i of [1,2,3,4,5,6]"></div>
+  </div>
+</div>

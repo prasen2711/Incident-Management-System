@@ -1,0 +1,119 @@
+<div class="auth-layout">
+  <!-- Left Side: Branding & Info -->
+  <div class="auth-banner">
+    <div class="banner-content animate-fade-in">
+      <div class="brand">
+        <div class="logo-box">TCS</div>
+        <div class="brand-text">
+          <h1>Enterprise Incident Management</h1>
+          <p>Powered by Tata Consultancy Services</p>
+        </div>
+      </div>
+
+      <div class="workflow-section">
+        <h3>Join the Platform</h3>
+        <p style="color: #e0f2fe; margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.5;">
+          Select your role to get started. Standard users can immediately raise incidents. Support agents require administrative approval before accessing the dashboard.
+        </p>
+        
+        <div class="compliance-badge">
+          <span class="icon">🛡️</span>
+          <span>Role-Based Access Control Enforced</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side: Signup Form -->
+  <div class="auth-form-container">
+    <div class="auth-card signup-card animate-fade-in">
+      <div class="card-header">
+        <h2>Create Account</h2>
+        <p>Register for enterprise access</p>
+      </div>
+
+      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+        
+        <div class="role-selector">
+          <label class="form-label">I am joining as a:</label>
+          <div class="role-cards">
+            <label *ngFor="let role of roles" class="role-card" [class.selected]="signupForm.get('role')?.value === role.value">
+              <input type="radio" formControlName="role" [value]="role.value" hidden>
+              <div class="radio-indicator"></div>
+              <div class="role-content">
+                <span class="role-title">{{ role.label }}</span>
+                <span class="role-desc">{{ role.desc }}</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input type="text" class="form-control" [class.error]="getFieldError('full_name')" formControlName="full_name" placeholder="John Doe">
+            <span class="field-error" *ngIf="getFieldError('full_name')">{{ getFieldError('full_name') }}</span>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Email Address *</label>
+            <input type="email" class="form-control" [class.error]="getFieldError('email')" formControlName="email" placeholder="name@tcs.com">
+            <span class="field-error" *ngIf="getFieldError('email')">{{ getFieldError('email') }}</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Department</label>
+            <input type="text" class="form-control" formControlName="department" placeholder="e.g. Engineering">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Employee ID</label>
+            <input type="text" class="form-control" formControlName="employee_id" placeholder="e.g. EMP-123">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" class="form-control" formControlName="phone_number" placeholder="+1 234 567 8900">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Password *</label>
+            <div class="input-wrapper">
+              <input [type]="showPassword ? 'text' : 'password'" class="form-control" [class.error]="getFieldError('password')" formControlName="password" placeholder="••••••••">
+              <button type="button" class="eye-btn" (click)="togglePassword()">{{ showPassword ? 'Hide' : 'Show' }}</button>
+            </div>
+            <span class="field-error" *ngIf="getFieldError('password')">{{ getFieldError('password') }}</span>
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="signupForm.get('role')?.value === 'support'">
+          <label class="form-label">Area of Expertise *</label>
+          <div class="checkbox-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <label *ngFor="let opt of expertiseOptions" class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-main);">
+              <input type="checkbox" [value]="opt" (change)="onExpertiseChange($event)"> {{ opt }}
+            </label>
+          </div>
+          <span class="field-error" *ngIf="getFieldError('area_of_expertise')">Please select at least one area of expertise</span>
+          
+          <div class="form-group" *ngIf="isOtherSelected" style="margin-top: 0.5rem;">
+            <label class="form-label">Please specify your expertise</label>
+            <input type="text" class="form-control" formControlName="other_expertise" placeholder="e.g. Database Administration">
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary w-100" style="margin-top: 1rem;" [disabled]="isLoading">
+          <span class="spinner" *ngIf="isLoading"></span>
+          <span>{{ isLoading ? 'Creating Account...' : 'Register Account' }}</span>
+        </button>
+      </form>
+
+      <div class="card-footer">
+        <p>Already have an account? <a routerLink="/login" class="auth-link">Sign In</a></p>
+      </div>
+    </div>
+  </div>
+</div>

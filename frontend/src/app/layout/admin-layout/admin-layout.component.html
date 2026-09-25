@@ -1,0 +1,48 @@
+<div class="app-shell" [class.collapsed]="sidebarCollapsed">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon tcs-icon">TCS</div>
+      <span class="brand-name" *ngIf="!sidebarCollapsed">Enterprise IMS</span>
+      <button class="collapse-btn" (click)="toggleSidebar()">{{ sidebarCollapsed ? '▶' : '◀' }}</button>
+    </div>
+    <div class="sidebar-role-badge" *ngIf="!sidebarCollapsed">
+      <span class="role-pill admin">Admin</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a *ngFor="let item of navItems" [routerLink]="item.route" routerLinkActive="active" class="nav-item" [title]="sidebarCollapsed ? item.label : ''">
+        <span class="nav-label" *ngIf="!sidebarCollapsed">{{ item.label }}</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-card" *ngIf="!sidebarCollapsed">
+        <div class="avatar">{{ getUserInitials() }}</div>
+        <div class="user-meta">
+          <span class="user-name">{{ user?.full_name }}</span>
+          <span class="user-email">{{ user?.email }}</span>
+        </div>
+      </div>
+      <div class="avatar-only" *ngIf="sidebarCollapsed" [title]="user?.full_name || ''">{{ getUserInitials() }}</div>
+      <button class="logout-btn" (click)="logout()" [title]="sidebarCollapsed ? 'Logout' : ''">
+        <span>⎋</span>
+        <span *ngIf="!sidebarCollapsed"> Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main-area">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h3 class="page-context">Admin Control Panel</h3>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-user">
+          <div class="avatar sm">{{ getUserInitials() }}</div>
+          <span>{{ user?.full_name }}</span>
+        </div>
+      </div>
+    </header>
+    <div class="content-area">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

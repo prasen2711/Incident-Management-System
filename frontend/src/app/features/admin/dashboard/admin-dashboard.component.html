@@ -1,0 +1,90 @@
+<div class="dashboard animate-fade-in">
+  <div class="page-header">
+    <div>
+      <h1>Admin Dashboard</h1>
+      <p>Good to see you, {{ currentUser?.full_name }}. Here's what's happening.</p>
+    </div>
+    <div class="header-actions" style="display: flex; gap: 1rem; align-items: center;">
+      <button class="btn-primary" style="display: flex; align-items: center; gap: 0.5rem;" (click)="generateMonthlyReport()" [disabled]="generatingAnalytics">
+        <span class="spinner" *ngIf="generatingAnalytics" style="width: 14px; height: 14px; border-width: 2px;"></span>
+        {{ generatingAnalytics ? 'Generating...' : '📊 Monthly Report' }}
+      </button>
+      <a routerLink="/admin/incidents" class="btn-primary" style="text-decoration:none;">View All Incidents</a>
+    </div>
+  </div>
+
+  <div class="skeleton-grid" *ngIf="loading">
+    <div class="skeleton-card" *ngFor="let i of [1,2,3,4]"></div>
+  </div>
+
+  <div class="stats-grid" *ngIf="!loading">
+    <div class="stat-card card {{ card.color }}" *ngFor="let card of statCards">
+      <div class="stat-info">
+        <div class="stat-value">{{ card.value }}</div>
+        <div class="stat-label">{{ card.label }}</div>
+        <div class="stat-sub">{{ card.sub }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-grid" *ngIf="!loading">
+    <div class="panel card">
+      <div class="panel-header">
+        <h3>Status Overview</h3>
+      </div>
+      <div class="bar-chart" *ngIf="stats">
+        <div *ngFor="let key of getStatusKeys()" class="bar-row">
+          <span class="bar-key">{{ key.replace('_', ' ') }}</span>
+          <div class="bar-track">
+            <div class="bar-fill {{ key }}" [style.width.%]="stats.total_incidents ? (stats.status_distribution[key] / stats.total_incidents * 100) : 0"></div>
+          </div>
+          <span class="bar-val">{{ stats.status_distribution[key] }}</span>
+        </div>
+        <div *ngIf="getStatusKeys().length === 0" class="empty-state">No incidents yet</div>
+      </div>
+    </div>
+
+    <div class="panel card">
+      <div class="panel-header">
+        <h3>Priority Breakdown</h3>
+      </div>
+      <div class="priority-chart" *ngIf="stats">
+        <div *ngFor="let key of getPriorityKeys()" class="priority-row">
+          <span class="badge-pill {{ key }}">{{ key }}</span>
+          <div class="bar-track">
+            <div class="bar-fill {{ key }}" [style.width.%]="stats.total_incidents ? (stats.priority_distribution[key] / stats.total_incidents * 100) : 0"></div>
+          </div>
+          <span class="bar-val">{{ stats.priority_distribution[key] }}</span>
+        </div>
+        <div *ngIf="getPriorityKeys().length === 0" class="empty-state">No incidents yet</div>
+      </div>
+    </div>
+
+    <div class="panel card">
+      <div class="panel-header">
+        <h3>User Summary</h3>
+        <a routerLink="/admin/users" class="panel-link">Manage →</a>
+      </div>
+      <div class="user-summary">
+        <div class="user-row">
+          <span class="u-label">Admins</span>
+          <span class="u-count">{{ getAdminCount() }}</span>
+        </div>
+        <div class="user-row">
+          <span class="u-label">Support Agents</span>
+          <span class="u-count">{{ getSupportCount() }}</span>
+        </div>
+        <div class="user-row">
+          <span class="u-label">Service Desk Users</span>
+          <span class="u-count">{{ getStaffCount() }}</span>
+        </div>
+        <div class="divider"></div>
+        <div class="user-row">
+          <span class="u-label">Active Users</span>
+          <span class="u-count">{{ getActiveCount() }}</span>
+        </div>
+        <div class="empty-state" *ngIf="users.length === 0">No users loaded</div>
+      </div>
+    </div>
+  </div>
+</div>
